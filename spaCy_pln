@@ -1,4 +1,4 @@
-import spacy
+import spacy # biblioteca pre-cargada para el modelo
 
 # Carga el modelo de spaCy pequeño (sm - small) en español (es) 
 # y entrenado con noticias (news) 
