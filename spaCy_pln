@@ -1,0 +1,52 @@
+import spacy
+
+# Carga el modelo de spaCy pequeño (sm - small) en español (es) 
+# y entrenado con noticias (news) 
+pln = spacy.load("es_core_news_sm")
+
+# Ejemplos de comentarios de clientes
+comentarios = [
+    "El servicio fue excelente, los agentes son muy amables.",
+    "Tuve que esperar demasiado tiempo para que me atendieran.",
+    "El bot no me resolvió el problema, pero el asesor fue de ayuda.",
+    "Me encantó la atención, resolvieron mi problema rápidamente.", 
+    "El servicio fue muy lento y no solucionaron nada.",
+    "Me atendieron bien, pero tardaron demasiado en responder.",
+    "No me gustó cómo manejaron mi caso, esperaba una mejor solución.",
+    "Todo fue perfecto, la atención fue excelente."
+]
+
+# Conjuntos de palabras clave positivas y negativas 
+positivas = {"excelente", "amable", "rápido", 
+                "eficiente", "bueno", "bien"}
+negativas = {"esperar", "tarde", "malo", "lento", 
+                "problema", "demasiado"}
+
+# Análisis de los comentarios
+for comentario in comentarios:
+    doc = pln(comentario) # objeto del modelo pln de spaCy
+
+    # Extrae palabras clave (sustantivos, adjetivos y adverbios)
+    palabras_clave = [token.text for token in doc if token.pos_ 
+                        in {"NOUN", "ADJ", "ADV"}]
+
+    # Normaliza las palabras para analizar el "sentimiento"
+    palabras_normalizadas = {token.lemma_.lower() for token in doc}
+
+    # Cuenta las palabras positivas y negativas de cada comentario (hace una resta positivas - negativas)
+    score = sum(1 for word in palabras_normalizadas 
+                            if word in positivas) 
+                            - sum(1 for word in palabras_normalizadas 
+                                if word in negativas)
+
+    # Determina el "sentimiento" de cada comentario
+    sentimiento = "Positivo 👍🏻" if score > 0 
+            else "Negativo 👎🏻" if score < 0 
+            else "Neutral 😐"
+
+    # Mostrar los resultados
+    print("\n-----------------------------------")
+    print(f"Comentario: {comentario}")
+    print(f"Palabras clave detectadas: {', '.join(palabras_clave) if palabras_clave else 'Ninguna'}")
+    print(f"Sentimiento: {sentimiento}")
+print("\n-----------------------------------")
